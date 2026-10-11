@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRYPTO // the open secret — a cypherpunk archive</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 fill=%22%23050805%22/%3E%3Ctext x=%222%22 y=%2212%22 font-size=%2210%22 fill=%22%2333ff66%22 font-family=%22monospace%22%3E%26gt;_%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#050805; --fg:#33ff66; --dim:#1a8f3c; --dark:#0d1a0d;
+  --amber:#ffb000; --red:#ff3333; --cyan:#00e5ff; --white:#e8ffe8;
+  --border:#123a1b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--fg);
+  font-family:'Courier New',Courier,monospace;
+  line-height:1.6; font-size:15px;
+  text-shadow:0 0 4px rgba(51,255,102,.25);
+}
+/* scanlines + vignette */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:9998;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 1px,transparent 1px 3px);
+}
+body::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:9999;
+  background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%);
+}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+a{color:var(--cyan);text-decoration:none}
+a:hover{text-decoration:underline;text-shadow:0 0 8px var(--cyan)}
+h1,h2,h3{font-weight:normal;letter-spacing:1px}
+.blink{animation:blink 1.1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.glitch{position:relative;display:inline-block}
+.glitch:hover{animation:glitch .3s steps(2) 2}
+@keyframes glitch{25%{transform:translate(1px,-1px);opacity:.7}75%{transform:translate(-1px,1px)}}
+/* header */
+header{padding:60px 0 30px;text-align:center;border-bottom:1px solid var(--border)}
+header .ascii{color:var(--dim);font-size:10px;line-height:1.15;white-space:pre;display:inline-block;text-align:left;text-shadow:none}
+header h1{font-size:clamp(22px,5vw,42px);margin:18px 0 6px;color:var(--white)}
+header .sub{color:var(--dim);font-size:13px}
+header .sub b{color:var(--amber);font-weight:normal}
+/* nav */
+nav{position:sticky;top:0;z-index:100;background:rgba(5,8,5,.95);border-bottom:1px solid var(--border);padding:10px 0;backdrop-filter:blur(3px)}
+nav .wrap{display:flex;flex-wrap:wrap;gap:2px 14px;justify-content:center;font-size:12.5px}
+nav a{color:var(--dim)}
+nav a:hover{color:var(--fg)}
+nav a .n{color:var(--amber)}
+/* sections */
+section{padding:56px 0 24px;border-bottom:1px dashed var(--border)}
+.tag{color:var(--bg);background:var(--dim);display:inline-block;padding:1px 8px;font-size:12px;letter-spacing:2px;margin-bottom:14px}
+section h2{font-size:clamp(18px,3.4vw,26px);color:var(--white);margin-bottom:6px}
+section h2::before{content:"## ";color:var(--amber)}
+.meta{color:var(--dim);font-size:12.5px;margin-bottom:18px}
+.meta em{color:var(--cyan);font-style:normal}
+p{margin-bottom:14px}
+p b,li b{color:var(--white);font-weight:normal}
+.quote{
+  border-left:2px solid var(--amber); padding:10px 16px; margin:18px 0;
+  color:var(--white); background:rgba(255,176,0,.04); font-style:italic;
+}
+.quote .who{display:block;margin-top:8px;color:var(--dim);font-style:normal;font-size:12.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:16px 0}
+.card{
+  border:1px solid var(--border);padding:14px 16px;background:var(--dark);
+  align-items:start;
+}
+.card:hover{border-color:var(--dim)}
+.card h3{color:var(--fg);font-size:14.5px;margin-bottom:6px}
+.card h3::before{content:"> ";color:var(--amber)}
+.card p{font-size:13px;color:#9fdfb3;margin:0}
+.card .yr{color:var(--amber);font-size:11.5px;display:block;margin-bottom:4px}
+ul.list{list-style:none;margin:10px 0}
+ul.list li{padding:5px 0 5px 22px;position:relative}
+ul.list li::before{content:"[+]";position:absolute;left:0;color:var(--amber)}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+th,td{border:1px solid var(--border);padding:7px 10px;text-align:left;vertical-align:top}
+th{color:var(--amber);background:var(--dark);font-weight:normal;letter-spacing:1px}
+td b{color:var(--white);font-weight:normal}
+/* timeline */
+.timeline{margin:18px 0;border-left:1px solid var(--dim);padding-left:22px}
+.tl{position:relative;margin-bottom:16px}
+.tl::before{content:"●";position:absolute;left:-27px;color:var(--amber);font-size:10px;top:4px}
+.tl .yr{color:var(--amber);font-size:12.5px;letter-spacing:1px}
+.tl .what{color:var(--white)}
+.tl p{font-size:13px;color:#9fdfb3;margin:2px 0 0}
+/* manifestos */
+.manifesto{
+  background:var(--dark);border:1px solid var(--dim);padding:20px 22px;margin:18px 0;
+  white-space:pre-wrap;color:var(--white);font-size:13.5px;
+}
+.manifesto .mt{color:var(--amber);display:block;margin-bottom:12px;letter-spacing:2px}
+/* players */
+.person{display:flex;gap:14px;padding:10px 0;border-bottom:1px dotted var(--border)}
+.person .handle{min-width:150px;color:var(--cyan)}
+.person .desc{flex:1;font-size:13.5px;color:#9fdfb3}
+.person .desc b{color:var(--white);font-weight:normal}
+/* koans */
+.koan{display:flex;gap:14px;margin:14px 0}
+.koan .num{font-size:34px;color:var(--dark);text-shadow:0 0 1px var(--dim);min-width:46px;line-height:1}
+.koan .body b{color:var(--amber);font-weight:normal}
+/* footer */
+footer{padding:40px 0 80px;text-align:center;color:var(--dim);font-size:12.5px}
+footer .fin{color:var(--amber);letter-spacing:3px;margin-top:10px}
+.crt-flicker{animation:flick 4s infinite}
+@keyframes flick{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.6}94%{opacity:1}}
+@media(max-width:640px){.person{flex-direction:column;gap:2px}.koan{flex-direction:column;gap:4px}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+<a href="#timeline"><span class="n">00</span> timeline</a>
+<a href="#genesis"><span class="n">01</span> genesis</a>
+<a href="#ethic"><span class="n">02</span> the ethic</a>
+<a href="#cipher"><span class="n">03</span> public key</a>
+<a href="#rsa"><span class="n">04</span> prime time</a>
+<a href="#market"><span class="n">05</span> the market</a>
+<a href="#war"><span class="n">06</span> the wars</a>
+<a href="#anarchy"><span class="n">07</span> crypto anarchy</a>
+<a href="#clipper"><span class="n">08</span> clipper</a>
+<a href="#victory"><span class="n">09</span> the dike breaks</a>
+<a href="#secret"><span class="n">10</span> the open secret</a>
+<a href="#play"><span class="n">11</span> the players</a>
+<a href="#code"><span class="n">12</span> write code</a>
+</div></nav>
+
+<header class="crt-flicker"><div class="wrap">
+<div class="ascii">
+  ____ ______   ______ _____ ___  
+ / ___|  _ \ \ / /  _ \_   _/ _ \ 
+| |   | |_) \ V /| |_) || || | | |
+| |___|  _ &lt; | | |  __/ | || |_| |
+ \____|_| \_\|_| |_|    |_| \___/ 
+  </div>
+<h1 class="glitch">THE OPEN SECRET</h1>
+<div class="sub">a cypherpunk archive of the twenty-year war for private cryptography<br>
+compiled from steven levy's <b>Crypto</b> (2001) &mdash; ten chapters, digested<br>
+<span class="blink">_</span></div>
+</div></header>
+
+<section id="timeline"><div class="wrap">
+<span class="tag">1958 &rarr; 2000</span>
+<h2>THE TIMELINE: forty years in one screen</h2>
+<div class="meta">every event that mattered // the whole war, chronologically</div>
+
+<div class="timeline">
+<div class="tl"><span class="yr">1958</span> <span class="what">MIT, Building 20</span><p>Peter Samson joins the Tech Model Railroad Club. The TX-0 arrives; "vulturing time" begins; the word <b>hack</b> is born in the S&amp;P subcommittee.</p></div>
+
+<div class="tl"><span class="yr">1969</span> <span class="what">Cheltenham &amp; Cambridge</span><p>James Ellis of GCHQ conceives <b>Non-Secret Encryption</b> from a buried WWII Bell memo. "Unfortunately, I can't see anything wrong with this." No implementation exists. The idea is shelved.</p></div>
+
+<div class="tl"><span class="yr">NOV 1973</span> <span class="what">One evening, one rented room</span><p><b>Clifford Cocks</b>, 22, implements Ellis's theory &mdash; multiply two large primes. Functionally RSA, three years early. Nobody much cares. The next year <b>Malcolm Williamson</b> tries to break it and invents Diffie-Hellman instead. GCHQ classifies everything and does nothing with it for 24 years.</p></div>
+
+<div class="tl"><span class="yr">1974-75</span> <span class="what">IBM / NBS</span><p>Horst Feistel's <b>Lucifer</b> becomes <b>DES</b> &mdash; after the NSA cuts the key from 128 to 56 bits. Hellman's law: a small key is a guarantee of insecurity.</p></div>
+
+<div class="tl"><span class="yr">MAY 1975</span> <span class="what">Palo Alto, house-sitting for McCarthy</span><p>Whit Diffie's eureka: <b>split the key.</b> Public key + digital signature conceived in an afternoon. He nearly forgets it reaching for a Coke &mdash; and won't write it down, because his computer isn't secure.</p></div>
+
+<div class="tl"><span class="yr">MAY 1976</span> <span class="what">The phone call</span><p>Hellman cracks the implementation: discrete exponentiation. The <b>Diffie-Hellman key exchange</b> &mdash; two strangers, open channel, shared secret.</p></div>
+
+<div class="tl"><span class="yr">NOV 1976</span> <span class="what">"New Directions in Cryptography" publishes</span><p>"We stand today on the brink of a revolution in cryptography." The NSA's 27-year monopoly is broken in print.</p></div>
+
+<div class="tl"><span class="yr">APR 3, 1977</span> <span class="what">Passover seder &rarr; midnight couch</span><p>After months of invent-and-Adleman-breaks, Rivest strips factoring to essentials: <b>RSA</b>. Adleman asks his name off the paper, keeps it last, and calls it "the least important paper my name would ever appear on." Alice and Bob are born.</p></div>
+
+<div class="tl"><span class="yr">JUL 1977</span> <span class="what">The Meyer letter</span><p>NSA's Joseph Meyer cites ITAR: crypto is a <b>munition</b>, publishing about it could mean jail. (He had earlier invented the ankle monitor.) The war on mathematicians goes official.</p></div>
+
+<div class="tl"><span class="yr">AUG 1977</span> <span class="what">Gardner's column</span><p>Scientific American prints RSA and the <b>RSA-129 challenge</b> ($100, estimated 40 quadrillion years). Thousands of SASEs flood MIT; the pizza-and-envelope-stuffing party follows in December. Poe's "no cipher is unbreakable" declared void.</p></div>
+
+<div class="tl"><span class="yr">1978</span> <span class="what">The buried bombshell</span><p>US Justice Dept. secretly rules ITAR's crypto restrictions <b>unconstitutional</b>. The NSA knows; nobody is told for two years. Inman begins the charm offensive &mdash; first public speech in NSA history: "My concern is that the government has too little" control.</p></div>
+
+<div class="tl"><span class="yr">1981-82</span> <span class="what">The tribe forms</span><p>First <b>Crypto</b> conference at UCSB, organized by grad student David Chaum (notices printed at the shop that did Covert Information Bulletin). The rump session becomes a tradition. Chaum invents blind signatures &mdash; anonymous digital cash.</p></div>
+
+<div class="tl"><span class="yr">AUG 1982</span> <span class="what">The knapsack dies in public</span><p>Adleman cracks Merkle's knapsack on an <b>Apple II</b> at Crypto '82 &mdash; "the theory first, the public humiliation later." Merkle: "It didn't work." The outsiders now do cryptanalysis too.</p></div>
+
+<div class="tl"><span class="yr">1983-86</span> <span class="what">RSA Inc. nearly dies</span><p>Patent bought from MIT for $150K; chip fails in silicon; CEO drifts toward Scientology. Jim Bidzos walks in, takes over on "Black Friday," lands Lotus Notes &mdash; the first mass-market public key deployment. The Obscene Crypto Caller becomes a regular.</p></div>
+
+<div class="tl"><span class="yr">1986-89</span> <span class="what">The export regime hardens</span><p>Ozzie at Fort Meade: "We could stop your shipments of 1-2-3 tomorrow." The <b>32-bit export cap</b> is born &mdash; two-tier crypto, Americans strong / foreigners breakable. Shamir's zero-knowledge patent briefly declared a US state secret.</p></div>
+
+<div class="tl"><span class="yr">JAN 24, 1991</span> <span class="what">The Biden bomb</span><p>S.266 language: providers <b>"shall ensure the government can obtain the plaintext."</b> Phil Zimmermann &mdash; six years of nights on PGP, mortgage in arrears &mdash; ships it as freeware in June. Kelly Goen drives the Bay Area uploading from payphones. PGP crosses the ocean instantly. Biden withdraws the clause; the copies can't be recalled.</p></div>
+
+<div class="tl"><span class="yr">SEPT 1992</span> <span class="what">"Hey, you guys are cypherpunks!"</span><p>Hughes, May, Gilmore's Berkeley meeting. Both manifestos read aloud; a key-signing party; the list goes up on toad.com. PGP 2.0 posts from Amsterdam and Auckland &mdash; imported <em>into</em> the US.</p></div>
+
+<div class="tl"><span class="yr">APR 16, 1993</span> <span class="what">Clipper announced</span><p>The Clinton administration endorses key escrow: <b>Skipjack</b> in a tamperproof chip, keys split to NIST + Treasury, wiretap data in the LEAF. Brooks wanted national debate; the FBI wanted speed. Public comment: 320 responses, 2 in favor. "Big Brother Inside" stickers circulate. ACLU and Rush Limbaugh agree for once.</p></div>
+
+<div class="tl"><span class="yr">1994</span> <span class="what">Two guillotines</span><p><b>April 24:</b> RSA-129 factored by 1,600 machines in 8 months &mdash; THE MAGIC WORDS ARE SQUEAMISH OSSIFRAGE. <b>Summer:</b> Matt Blaze kills the LEAF checksum in <b>42 minutes</b> at Bell Labs. NYT, above the fold. The Gore letter blinks at Rep. Cantwell. Clipper is dead in everything but name.</p></div>
+
+<div class="tl"><span class="yr">1995-96</span> <span class="what">The net fights back</span><p>Netscape's 40-bit SSL broken &mdash; first by Doligez's borrowed cycles (free), then by two Berkeley grad students in <b>under a minute</b> (RNG seeded from time + PIDs). The Scientologists kill Julf's Penet remailer via Finnish courts. Zimmermann's 3-year grand jury ends: case dropped, "Phil Got Off the Hook" party.</p></div>
+
+<div class="tl"><span class="yr">1997-99</span> <span class="what">The dike breaks</span><p>Bernstein wins: source code is speech (9th Cir.). The NRC panel hears the secrets and rules them irrelevant. EFF's DES Cracker: $210K, 24 hours. Gore announces export liberalization for any key length. Baker: <b>"It's over."</b></p></div>
+
+<div class="tl"><span class="yr">DEC 23, 1997</span> <span class="what">GCHQ declassifies &mdash; too late</span><p>The Ellis, Cocks, and Williamson papers go public. James Ellis died a month earlier, never seeing it. His pub line to Diffie, 1982: <b>"You did more with it than we did."</b></p></div>
+
+<div class="tl"><span class="yr">JAN 2000</span> <span class="what">RSA 2000: the champagne</span><p>Bidzos toasts the NSA panel. Skipjack published. AES bakeoff open, half the contenders foreign. Windows 2000 ships 128-bit crypto with clearance. Clinton signs the digital signature bill &mdash; electronically. Bidzos in a choir robe: "We've found the problem to the solution, and it's e-commerce!"</p></div>
+</div>
+
+<div class="quote">Forty years. A model railroad club, three papers, one bill, a mortgage, forty-two minutes &mdash; and the right to whisper.
+<span class="who">&mdash; the whole war, abridged</span></div>
+</div></section>
+
+<section id="genesis"><div class="wrap">
+<span class="tag">CHAPTER 01-02</span>
+<h2>GENESIS: the basement where it began</h2>
+<div class="meta">MIT, 1958 &rarr; 1976 // the TX-0, the word "hack," and the two papers that broke the monopoly</div>
+
+<p>Winter 1958. A freshman named <b>Peter Samson</b> wanders MIT's Building 26 at 2 a.m., opening doors he wasn't invited through, because things had meaning only if you found out how they worked &mdash; and how would you go about that if not by getting your hands on them? In the basement: unguarded IBM machines. Upstairs: the IBM 704, a multi-million-dollar "Hulking Giant" operated by a <b>Priesthood</b>. You handed your punch cards to the priests and waited days for output.</p>
+
+<div class="quote">ACOLYTE: Oh machine, would you accept my offer of information so you may run my program and perhaps give me a computation?
+PRIEST (on behalf of the machine): We will try. We promise nothing.
+<span class="who">&mdash; the batch-processing liturgy, as described in Hackers ch.1</span></div>
+
+<p>Then came the <b>TX-0</b> &mdash; one of the first transistor computers, and it had <em>no priesthood</em>. You sat at the console. You could hear your program run through a speaker &mdash; the memory cycles played as fuzzy organ chords. The model-railroad kids restructured their lives around it, "vulturing time" on midnight stakeouts for no-shows on the sign-up sheet. From their jargon &mdash; munged, cruft, and a build done purely for the joy of involvement &mdash; came the word: <b>hack</b>. The most productive Signals &amp; Power people called themselves <b>hackers</b>, with pride.</p>
+
+<h3 style="color:var(--fg);margin-top:22px">## the empire strikes, 1958-1976</h3>
+<ul class="list">
+<li><b>1958</b> &mdash; TMRC hackers meet the TX-0. The word "hack" is born in Building 20.</li>
+<li><b>1974</b> &mdash; Horst Feistel finishes <b>Lucifer</b> at IBM: the first public-facing strong cipher. The NSA leans on IBM; the key is cut from 128 bits to 56.</li>
+<li><b>1975</b> &mdash; NBS publishes DES. Marty Hellman's law: <span style="color:var(--amber)">"A large key is not a guarantee of security, but a small key is a guarantee of insecurity."</span></li>
+<li><b>1975-76</b> &mdash; Whitfield Diffie, after a decade-long quest and a romance that reframed it ("how do you deal with a trustworthy person in the midst of a world full of untrustworthy people?"), teams with Hellman. Ralph Merkle, a grad student whose professor rejected his ideas, pursues the same heresy alone.</li>
+</ul>
+
+<div class="quote">We stand today on the brink of a revolution in cryptography.
+<span class="who">&mdash; Diffie &amp; Hellman, "New Directions in Cryptography," November 1976</span></div>
+
+<h3 id="ethic" style="color:var(--fg);margin-top:22px">## the hacker ethic (levy, ch.2)</h3>
+<div class="grid">
+<div class="card"><h3>Hands-On Imperative</h3><p>Access to computers &mdash; and anything which might teach you something about the way the world works &mdash; should be unlimited and total.</p></div>
+<div class="card"><h3>Information wants to be free</h3><p>All information should be free. A computer <em>is</em> a free flow of information; jam any bus and the system collapses.</p></div>
+<div class="card"><h3>Mistrust authority</h3><p>Promote decentralization. Bureaucracies cannot accommodate the exploratory impulse. IBM was the batch-processed world; the hackers refused it.</p></div>
+<div class="card"><h3>Judge by the hack</h3><p>Not degrees, age, race, or position. A twelve-year-old (Peter Deutsch) who could hack was equal to a professor who couldn't.</p></div>
+<div class="card"><h3>Art and beauty</h3><p>The decimal print routine, ground to 50 instructions by the crowd &mdash; until silent Jenson posted <span style="color:var(--amber)">46</span> on the bulletin board. The hackers were quiet for days. "That was Nirvana."</p></div>
+<div class="card"><h3>Computers change lives</h3><p>"Once you fix a behavioral problem, it's fixed forever, and it is exactly an image of what you meant." &mdash; Samson</p></div>
+</div>
+
+<div class="quote">A zero for the homework. "You used a computer! This CAN'T be right." &mdash; the professor, to Bob Wagner, who had done his Numerical Analysis assignment on a 3,000-line calculator simulation he wrote for a multi-million-dollar TX-0. He named it the Expensive Desk Calculator.
+<span class="who">&mdash; the eternal credentialism problem, 1959</span></div>
+</div></section>
+
+<section id="cipher"><div class="wrap">
+<span class="tag">CHAPTER 03</span>
+<h2>PUBLIC KEY: the heresy of splitting the key</h2>
+<div class="meta">stanford, 1975-76 // one house-sit, one eureka, and the invention of digital trust</div>
+
+<p>Diffie hits bottom &mdash; over 30, unpaid, weeping in John McCarthy's bedroom: a "broken-down old researcher." Mary Fischer tells him: <span style="color:var(--amber)">"I know what I'm looking at, and I know you're a great man."</span> Then, May 1975, house-sitting for McCarthy: he makes breakfast, sees the family off, and paces with the problem all day. Afternoon. Everything clicks.</p>
+
+<div class="quote">He would split the key.<span class="who">&mdash; the three most important words in the history of privacy</span></div>
+
+<p>The dogma since antiquity: one key scrambles and unscrambles. Diffie's inversion: a <b>pair</b>. Publish the public half to the world; keep the private half. No couriers, no key-distribution centers, and &mdash; run in reverse &mdash; the <b>digital signature</b> falls out for free: sign with your private key, and anyone can verify only you could have sent it. Alice and Bob make their first appearance here. So does Eve.</p>
+
+<ul class="list">
+<li><b>The eureka almost didn't stick.</b> Diffie went downstairs for a Coke and the idea <em>fell out of his head</em>. One horrible blank moment. He refused to write it down &mdash; his computer wasn't secure. The man who just invented digital privacy couldn't yet digitally protect his notes about it.</li>
+<li><b>1976</b> &mdash; Hellman finds the implementation: discrete exponentiation. Easy one way; reversing it takes a million million quadrillion more operations. The <b>Diffie-Hellman key exchange</b>: two strangers, an open channel, one shared secret.</li>
+<li><b>Ralph Merkle</b> had independently circled the same heresy from Berkeley &mdash; his knapsack scheme nearly beaten out of him by professors who called it a waste of time. History credited him last and least.</li>
+<li><b>November 1976</b> &mdash; "New Directions in Cryptography" publishes. The embargo is broken.</li>
+</ul>
+</div></section>
+
+<section id="rsa"><div class="wrap">
+<span class="tag">CHAPTER 04</span>
+<h2>PRIME TIME: three mathematicians vs. the state</h2>
+<div class="meta">mit, 1977-78 // rsa, alice &amp; bob, and the year math became a munition</div>
+
+<p>December 1976: a grad student drops "New Directions" on Ron Rivest's desk &mdash; <span style="color:var(--cyan)">"here's something interesting..."</span> Rivest recruits Leonard Adleman (a pure-theory snob who changes the subject) and Adi Shamir (who learns all of algorithms from a library shelf in two weeks). The method: Rivest and Shamir invent a scheme, Adleman breaks it. <b>Thirty-one straight kills.</b> Then, April 3, 1977 &mdash; after a Passover seder, wine, midnight on the couch with the terminal deliberately off &mdash; Rivest strips factoring to naked essentials:</p>
+
+<ul class="list">
+<li><b>RSA</b> &mdash; public key = product of two 100+ digit primes. Decrypt without the primes = factor the product. Even Gauss couldn't crack that nut. Works in both directions, so digital signatures come free.</li>
+<li>Adleman, who broke everything: <span style="color:var(--amber)">"I think that's it, Ron."</span> Then he asks his name be taken off &mdash; "it's your work" &mdash; then keeps it last, because <em>"I thought that this would be the least important paper my name would ever appear on."</em></li>
+<li><b>Alice and Bob are born here</b> &mdash; Rivest personified sender and recipient. Every crypto paper since runs his casting choices.</li>
+<li><b>Martin Gardner's column, Aug 1977</b> &mdash; the RSA-129 challenge, $100 to the first breaker. Thousands of self-addressed envelopes flood MIT. Poe's dictum ("human ingenuity cannot concoct a cipher which human ingenuity cannot resolve") declared void.</li>
+</ul>
+
+<h3 style="color:var(--fg);margin-top:22px">## the government's response: arrest the mathematicians</h3>
+<ul class="list">
+<li><b>The Meyer letter, July 1977</b> &mdash; citing ITAR: cryptographic devices are <em>munitions</em>, and technical data about them is contraband. Presenting a crypto paper could mean jail. The letter's author, Joseph A. Meyer (NSA), had earlier proposed radio anklets for paroled criminals. <b>He invented the ankle monitor</b> &mdash; then tried to arrest the mathematicians.</li>
+<li><b>SECRECY ORDERS</b> land on George Davida's stream cipher and Carl Nicolai's Phasorphone &mdash; their own inventions, $10,000 and two years in prison for discussing them. Both fight. Both win. Inman's excuse: "heat of battle."</li>
+<li><b>Justice Dept. (May 1978)</b> secretly concludes ITAR's crypto restrictions are <em>unconstitutional</em> &mdash; prior restraint on the First Amendment. The NSA knows. Nobody tells anyone. For two years. A House committee finds out; no satisfactory answer is forthcoming.</li>
+<li><b>December 1977</b> &mdash; the pizza and envelope-stuffing party. Grad students, 7,000 envelopes. RSA goes global by 35-cent stamp.</li>
+<li><b>Inman's turn</b> &mdash; drives to Stanford personally, gives the first public speech in NSA history, and lands the honest line: <span style="color:var(--amber)">"My concern is that the government has too little"</span> control. His legacy insight: <em>the whole issue is export.</em></li>
+</ul>
+
+<div class="quote">The NSA can perform its mission the old-fashioned way: STAY AHEAD OF OTHERS.
+<span class="who">&mdash; George Davida, minority report, 1980</span></div>
+</div></section>
+
+<section id="market"><div class="wrap">
+<span class="tag">CHAPTER 05</span>
+<h2>THE MARKET: capitalism gets the algorithm</h2>
+<div class="meta">silicon valley, 1981-1989 // the knapsack dies in public, rsa inc. nearly dies in private</div>
+
+<p><b>Crypto '82</b> &mdash; Adleman cracks Merkle's knapsack on an <b>Apple II</b>, live, at Diffie's rump-session panel. "The theory first, the public humiliation later." Merkle pays the $100, then $1,000 for the stronger version &mdash; collected two years later by Sandia's Ernie Brickell with a Cray. Merkle's post-mortem on his own scheme: <span style="color:var(--amber)">"It didn't work."</span> An NSA insider, glum: "It's not that we haven't seen this territory before, but you are covering it very quickly."</p>
+
+<p>Then the comedy of errors: the inventors of RSA found RSA <b>too much trouble to use</b> &mdash; caught with their own chip-design secrets unencrypted ("Naaah, it's too much work to encrypt it"). The company nearly dies: a CEO who transfers to Scientology, loans from guys named Vinnie and Steve at Kaplan's Deli, an office the size of a soccer field for five employees. And then <b>Jim Bidzos</b> &mdash; Greek immigrant, ex-Marine, backgammon gambler &mdash; walks in and becomes crypto's first supersalesman.</p>
+
+<ul class="list">
+<li><b>Lotus Notes (1985)</b> &mdash; Ray Ozzie builds the first mass-market public-key deployment: sign message, verify message, menu items. Bidzos "had Ray Ozzie by the balls." The Iris team speculates for weeks that he's an NSA plant.</li>
+<li><b>Diffie's croissant incident</b> &mdash; at a lunch, Diffie stares at a colleague's sandwich, draws a large knife, whacks off half, and calmly eats it. Not a bonding moment.</li>
+<li><b>The Obscene Crypto Caller</b> &mdash; heavy breathing, daily: "How big are the keys? Can the NSA break that?" The whole office huddles around the phone. RSA ships to anyone &mdash; that was the point.</li>
+<li><b>The ledger</b> &mdash; Bidzos gives Diffie stock worth $1M+. Offers Hellman the same; he declines ("not a stock guy"). Diffie's actual share of the Stanford patent: about <b>$10,000</b>.</li>
+</ul>
+</div></section>
+
+<section id="war"><div class="wrap">
+<span class="tag">CHAPTER 06</span>
+<h2>THE WARS: patents, exports, and the two-tier lie</h2>
+<div class="meta">fort meade vs. everyone, 1986-1994 // where "americans get strong crypto, foreigners get breakable crypto" was invented</div>
+
+<p><b>Ozzie at Fort Meade.</b> Lotus Notes legally counts as a weapon of mass destruction. The NSA officer on DES: <span style="color:var(--red)">"You're not going to export DES, no way, under no circumstances... you will never export DES."</span> Then the threat: <em>"We could stop your shipments of 1-2-3 tomorrow if we felt like it."</em> (1-2-3: the spreadsheet. Its "encryption": a password option.) Ozzie, direct: "Are you waiting for me to offer you a back door?" &mdash; "No, we don't want you to compromise the security of the product." Then what do you want? No answer. Three years of stalemate.</p>
+
+<p>The "concession": <b>32-bit keys for export</b> &mdash; which the NSA considered generous, having first offered 24. Each bit doubles the keyspace; the domestic 64-bit version wasn't twice as strong as export &mdash; it was <em>doubling-the-difficulty-32-separate-times</em> stronger. Days versus aeons. So Lotus ships two versions of reality. <b>This is the origin of every "export-grade cipher" vulnerability</b> &mdash; including Logjam and FREAK, decades later.</p>
+
+<ul class="list">
+<li><b>RC-2</b> &mdash; Rivest's replacement cipher, "tweaked" by the NSA. Ozzie: "How do you know they're not doing something to weaken it?" Rivest: the comments made good sense. (Crypto history is still arguing.)</li>
+<li><b>Shamir's inventions</b> &mdash; secret sharing (split a key into "shadows"), threshold schemes (any k-of-n), zero-knowledge proofs ("I could go to a Mafia-owned store a million successive times and they would still not be able to misrepresent themselves as me"). The US Army declares his zero-knowledge patent an American <em>official secret</em> &mdash; served on two Israelis. Lifted in two days when the NYT calls.</li>
+<li><b>Merkle kills prepublication</b> &mdash; 1989: the NSA demands his fast-crypto paper be suppressed. An anonymous reviewer leaks it to John Gilmore, who posts it to sci.crypt &mdash; 8,000 computers instantly. The voluntary review system is dead.</li>
+<li><b>The Microsoft sabotage</b> &mdash; NSA hints to Myhrvold that RSA is already broken; questions the patents; then a call: "don't do it." Bidzos phones Fort Meade: fix it or "you're going to answer to the congressman in my district... a district attorney... the New York Times." The reply: <span style="color:var(--amber)">"I'll call them."</span> Myhrvold's sharpest thought: <em>why would the agency want RSA stopped so much unless it was actually hard to break?</em></li>
+<li><b>The DSA betrayal (1991)</b> &mdash; the government's signature standard, authored by NSA's David Kravitz: "a technology that did signatures and nothing else very well." A public key system <b>that couldn't keep a secret</b>. NIST's own public comment: 320 responses, nearly all hostile. The standard dies orphaned. "We thought that the digital signature would be the easy one."</li>
+</ul>
+
+<div class="quote">Every day the dike doesn't break is a victory.
+<span class="who">&mdash; an NSA official, to Nathan Myhrvold, on export controls</span></div>
+</div></section>
+
+<section id="anarchy"><div class="wrap">
+<span class="tag">CHAPTER 07</span>
+<h2>CRYPTO ANARCHY: the movement gets a name</h2>
+<div class="meta">boulder &rarr; berkeley, 1991-1992 // pgp, the manifesto, and the list</div>
+
+<p><b>Phil Zimmermann.</b> Fourth grade, Miami: decodes a TV club's cipher without buying the key. College: writes a FORTRAN cipher "not even the CIA could break" &mdash; later finds that same construction in a textbook as a <em>trivially breakable</em> example. 1977: cold-calls Ron Rivest; LISP machines cost $100K; "that's out of my reach." Then Ellsberg at a 1982 rally cancels his New Zealand emigration &mdash; he stays to fight. Arrested twice, once alongside Ellsberg and Carl Sagan.</p>
+
+<p>A phone call from Charlie Merritt (RSA on a Z-80, already visited by the NSA) relights the fire. Six years of nights and weekends. Twelve-hour days in a bedroom, skipping mortgage payments. The program: <b>Pretty Good Privacy</b> &mdash; named after Garrison Keillor's "Ralph's Pretty Good Grocery." The bulk cipher he wrote himself: <b>Bass-O-Matic</b>, after the SNL fish-blender sketch.</p>
+
+<h3 style="color:var(--fg);margin-top:22px">## the biden bomb</h3>
+<p>January 24, 1991 &mdash; Senator Joseph Biden inserts FBI-written language into antiterrorism bill S.266: providers and manufacturers <em>"shall ensure that communications systems permit the government to obtain the plaintext contents."</em> Read that twice. A leaked warning spreads across the nets: <span style="color:var(--amber)">"I suggest you begin to stock up on crypto gear while you can still get it."</span></p>
+
+<p>Zimmermann's response: <b>ship now, give up the money.</b> Freeware. June 1991 &mdash; Kelly Goen drives the Bay Area with a laptop, acoustic coupler, and cellular phone, uploading from payphone to payphone, rushing off before an injunction could land. "Dandelion seeds." Zimmermann's legal theory: <em>"There's no law against Americans having strong cryptography."</em> PGP crosses the ocean instantly &mdash; <b>on the Information Highway, borders are just speed bumps.</b> Biden withdraws the clause in June, beaten. The withdrawal was irrelevant: the copies were unrecallable, "like words after they were uttered."</p>
+
+<ul class="list">
+<li><b>Bidzos erupts</b> &mdash; "Pretty Good Piracy." Screaming phone call. Legal notice. An ambiguous settlement Zimmermann interprets narrowly while quietly building PGP 2.0.</li>
+<li><b>Bass-O-Matic dies at lunch</b> &mdash; Crypto '91: Eli Biham dismantles it in one cafeteria sitting. Zimmermann's response is why he wins: he accepts he's a packager, not a cryptographer, and recruits volunteers worldwide. Replacement: IDEA, 128-bit, Swiss. "This is not a home-grown algorithm."</li>
+<li><b>The web of trust</b> &mdash; no central Certificate Authority. Friends sign friends' keys, face-to-face. Trust as an emergent, peer-to-peer property. "Paranoia levels" (Schneier) for hop distance. The Priesthood, abolished again.</li>
+<li><b>PGP 2.0 ships Sept 1992</b> &mdash; posted from Amsterdam and Auckland, <em>imported into</em> the US to invert the export law. "Like lighting a match to dry prairie grass." Docs included: "There are just too many PGP users to go after. And why would they single you out?"</li>
+</ul>
+
+<h3 style="color:var(--fg);margin-top:22px">## the cypherpunks are born</h3>
+<p>May 1992: Eric Hughes (Stetson) visits Tim May (outback hat, ex-Intel physicist) to look at houses. They talk for three days; zero houses viewed. Conclusion: build tools, not vibes. They recruit John Gilmore &mdash; Sun employee #5, EFF co-founder, who beat the US government over Friedman's reclassified library books and then asked a judge to rule the Espionage Act itself unconstitutional.</p>
+
+<p>September 19, 1992, Hughes's Berkeley house, ~20 people. May's 57-page handout. The reading of manifestos. A key-signing party. And St. Jude, leather-clad Mondo 2000 writer, looking around the room: <span style="color:var(--amber)">"Hey, you guys are cypherpunks!"</span> The name sticks. The list goes up on toad.com &mdash; 100 members in weeks, 700 within a year, 150 messages a day.</p>
+
+<div class="manifesto"><span class="mt">// THE CYPHERPUNK MANIFESTO &mdash; Eric Hughes, 1993</span>Privacy is necessary for an open society in the electronic age... We cannot expect governments, corporations, or other large, faceless organizations to grant us privacy out of their beneficence... <b>Cypherpunks write code.</b> They know that someone has to write software to defend privacy, and since it's their privacy, they're going to write it. Cypherpunks publish their code so that their fellow cypherpunks may practice and play with it. Cypherpunks realize that security is not built in a day... <b>Cypherpunks will make the networks safe for privacy.</b></div>
+
+<div class="manifesto"><span class="mt">// THE CRYPTO ANARCHIST MANIFESTO &mdash; Tim May, 1992 (closing)</span>...And just as a seemingly minor invention like barbed wire made possible the fencing-off of vast ranches and farms... so too will the seemingly minor discovery out of an arcane branch of mathematics come to be the wire clippers which dismantle the barbed wire around intellectual property. <b>Arise, world; you have nothing to lose but your barbed-wire fences!</b></div>
+
+<ul class="list">
+<li><b>David Chaum</b> &mdash; the Houdini who attended nothing. Blind signatures: a bank certifies your e-cash without learning who holds it. The Dining Cryptographers problem: unconditional, provable untraceability. Digicash's anonymous tolls and e-cash &mdash; and then Visa and Microsoft walk, patents held too tight, and Digicash goes bankrupt in 1998. The man who invented private digital money watched it die broke; every later payments company quietly rebuilds pieces of it.</li>
+<li><b>Remailers</b> &mdash; chains of anonymous servers, PGP envelopes nested within envelopes. Hughes: an interceptor gets "a tape of microphone hiss." Julf Helsingius runs Penet from Finland on a 386, $1,000/month of his own money: "Some people spend similar money on golf."</li>
+<li><b>BlackNet</b> &mdash; Tim May's fictional info-market for cruise missile plans, sent through remailers "for piquancy." Widely believed real. His defense: "If people die as a result of this... eh! I didn't hurt them."</li>
+</ul>
+
+<div class="quote">We have the capability of 100 percent privacy. But if we use this, I don't think society can survive.
+<span class="who">&mdash; Donn Parker, security expert, voicing the establishment's terror</span></div>
+</div></section>
+
+<section id="clipper"><div class="wrap">
+<span class="tag">CHAPTER 08</span>
+<h2>CLIPPER: the state's grand counterstroke</h2>
+<div class="meta">washington, 1993-1994 // key escrow, the LEAF, and the first internet victory over the national security state</div>
+
+<p><b>Clint Brooks</b>, NSA "Equities man" (balancing <em>breaking everyone's codes</em> against <em>providing America's codes</em>), opens his pitch to new general counsel Stewart Baker by setting a <b>large bottle of Advil</b> on the desk: "You're going to need this." His 1989 brainwave, after rejecting a secret trapdoor (if Congress found out, "the Church committee would look like a picnic"): <b>key escrow</b>. Strong crypto for everyone &mdash; duplicate keys split between two government escrow agents, retrievable with a warrant. And Brooks &mdash; the tragic figure &mdash; wanted <b>open national debate</b>. He told his superiors it couldn't be decided by the NSA: <em>"It has to be decided by the president of the United States."</em> They thought he'd lost his mind.</p>
+
+<ul class="list">
+<li><b>Skipjack</b> &mdash; 80-bit, 32 rounds, secret forever ("Never &mdash; never &mdash; would the agency allow its foes access to an advanced course on codemaking"). Capstone: the full version. The wiretap data rode in the <b>LEAF</b> &mdash; Law Enforcement Access Field, originally the <em>Exploitation</em> Field, renamed because, well, yes.</li>
+<li><b>The AT&T panic</b> &mdash; AT&T ships a consumer secure phone with DES. FBI director Sessions personally calls AT&T's CEO: install a government chip instead &mdash; stronger crypto, export approval, guaranteed federal purchases. AT&T, mid-negotiation on a $10B contract, says yes. <b>The same arrangement Diffie built public key to destroy: strong crypto, except someone else is in the bed.</b></li>
+<li><b>The pitch that won</b> &mdash; "Are you willing to sacrifice human lives for a fraction of a decimal point rise in the GNP?" Solved, per one official, as "a choice between thousands of people dying and Bill Gates being 10 percent richer." FBI's Kallstrom: <em>Are you married? Do you have a child? Imagine him in a Bronx fortress the torches can't cut...</em> March 31, 1993, Situation Room: <b>Clipper is a go.</b></li>
+<li><b>The omen</b> &mdash; Brooks keeps asking: "Who's going to handle this on Larry King Live?" A senior official: "Clint, this is really serious." Months later, Gore appears on Larry King to discuss the Information Highway. <b>The first question is the Clipper Chip.</b></li>
+</ul>
+
+<h3 style="color:var(--fg);margin-top:22px">## the collapse</h3>
+<ul class="list">
+<li><b>The analogy that needed no cryptography</b> &mdash; What if you had to leave a copy of your front-door key at the police station? "It's not America." &mdash; EFF. The ACLU finds itself agreeing with Rush Limbaugh. William Safire: "Sink the Clipper Chip."</li>
+<li><b>The meme</b> &mdash; a laptop sticker in the Intel Inside style: <span style="color:var(--red)">BIG BROTHER INSIDE.</span> Intel threatens to sue. The stickers stop. The damage doesn't.</li>
+<li><b>The numbers</b> &mdash; NIST public comment: 320 responses, <b>2 support Clipper</b>. "This is not a Hall of Fame batting average." NYT/CNN poll: 80% opposed. CPSR internet petition: 47,000 signatures &mdash; one of the first online political protests ever.</li>
+<li><b>Baker's contribution</b> &mdash; dismissing the opposition at CFP as <em>"the revenge of people who couldn't go to Woodstock because they had too much trig homework."</em></li>
+<li><b>Mike Nelson's verdict</b> &mdash; crypto is "the Bosnia of telecommunications." Barlow on the White House: "drinking the Kool-Aid, a national security version of Jonestown," fed by "if only I could tell you what I know."</li>
+</ul>
+
+<h3 style="color:var(--fg);margin-top:22px">## the 42-minute guillotine</h3>
+<p><b>Matt Blaze</b>, Bell Labs &mdash; ex-paramedic, comp-sci-plus-<em>political-science</em> degree, invited to Fort Meade as a friendly outside tester (camera-tracked, disembodied voices, NSA coffee mug). His question, the one Denning's panel didn't ask: not <em>is Skipjack strong</em> but <b>can you use the crypto while defeating the escrow?</b></p>
+
+<div class="quote">The LEAF's integrity checksum was 16 bits. Blaze wrote the "LEAF-blower" &mdash; brute-force all 2<sup>16</sup> checksums. Forty-two minutes. The encryption worked perfectly. The wiretappers decrypted garbage.
+<span class="who">&mdash; and the kicker: the FBI had insisted on squeezing all 80 session-key bits into the 128-bit LEAF. Eight bits given back, and the attack takes a week instead of 42 minutes. "That's a long time on hold."</span></div>
+
+<p>The NSA confirms his result is technically correct (and fixes his grammar). AT&T declines to bury it. John Markoff puts it <b>above the fold, page one, rightmost column: "FLAW DISCOVERED IN FEDERAL PLAN FOR WIRETAPPING."</b> The flaw was fixable. The taint was permanent. A system built to manufacture public trust had been publicly demonstrated untrustworthy by its own audit trail.</p>
+
+<ul class="list">
+<li><b>Cantwell vs. Gore</b> &mdash; first-term Rep. Maria Cantwell writes the export-reform bill. Gore calls: "I want you to stop this bill." She doesn't. Bill Gates tells the intelligence committee the national security case is "bullshit." The White House blinks &mdash; the Gore letter promises software escrow, private-sector agents, no classified algorithm. Written "to placate Rep. Cantwell," never cleared with the NSA. They ask to rescind. <em>"Do you know how silly you'd look?"</em> The letter stands, page one, Washington Post.</li>
+<li><b>The Dutch boy</b> &mdash; Myhrvold to the NSA: "you're like the little Dutch boy, plugging the dike with your fingers." The spook, smiling: <span style="color:var(--amber)">"Every day the dike doesn't break is a victory."</span></li>
+<li><b>Nirvana was lost</b> &mdash; 20,000 escrowed key-splits sit in double-walled safes under nuclear protocols, in a system nobody uses. Clint Brooks asks for a different assignment.</li>
+</ul>
+</div></section>
+
+<section id="victory"><div class="wrap">
+<span class="tag">CHAPTER 09</span>
+<h2>THE DIKE BREAKS: amateurs, supercomputers, and one minute</h2>
+<div class="meta">the net, 1994-2000 // rsa-129, ssl cracked twice, and the end of the war</div>
+
+<p><b>Morris's koans</b> (Crypto '95, from the recently retired NSA scientist): <span style="color:var(--amber)">"Never underestimate the time and expense your opponent will take to break your code"</span> &mdash; and, for codebreakers: <b>"Look for plaintext."</b> Humans are fallible; sometimes the unbreakable message is sitting there unencrypted.</p>
+
+<div class="grid">
+<div class="card"><span class="yr">APR 1994</span><h3>RSA-129 falls</h3><p>The 1977 Gardner challenge &mdash; 40 quadrillion years estimated &mdash; factored by 1,600 machines in 8 months, 5,000 MIPS-years, 400MB shipped on tape via US Mail. The magic words: <b>THE MAGIC WORDS ARE SQUEAMISH OSSIFRAGE.</b> "A bunch of amateurs can get together and do this."</p></div>
+<div class="card"><span class="yr">AUG 1995</span><h3>SSL 40-bit falls &mdash; twice</h3><p>Damien Doligez (INRIA, ex-NATO base near Versailles) hunts from the <em>end</em> of the keyspace "because the cypherpunks would start from the start." Idle workstation cycles, 10,000 keys/sec, cost: <b>free</b>. Broken on a holiday weekend.</p></div>
+<div class="card"><span class="yr">SEP 1995</span><h3>SSL falls in under a minute</h3><p>Berkeley grad students Goldberg &amp; Wagner, following koan two: Netscape's RNG was seeded from <b>time of day + Process ID + Parent ID</b>. Not random. Key recovered on a vanilla Pentium in &lt;60 seconds. "If Netscape did this wrong, what else did they do wrong?" &mdash; Schneier.</p></div>
+<div class="card"><span class="yr">1998</span><h3>DES falls in 24 hours</h3><p>The EFF builds Deep Crack for $210,000. A cipher still classified a munition, broken in a day by hardware anyone can afford. Assume the NSA has plenty in the basement. It did.</p></div>
+</div>
+
+<ul class="list">
+<li><b>Ozzie's NSAF gambit</b> &mdash; 64-bit crypto for everyone, 24 bits encrypted to the NSA's own public key. The government's response to his patent: a <b>SECRECY ORDER from the US Army</b> &mdash; for technology already deployed to six million Lotus Notes users, half overseas. NSA deputy director Crowell <em>laughs</em>, calls two days later: "It was all a mistake."</li>
+<li><b>Julf's end</b> &mdash; the attack on Penet comes not from a state but the Church of Scientology: dinner in Finland, then Helsinki police with a court order for his computer. A Swedish paper then pins internet child porn on his server (actually UK ringers forging headers). A judge rules email deserves fewer protections than physical mail. Aug 30, 1996: <b>Penet shuts down.</b> "There's no way you can run a server like mine in Finland." The math was perfect; the human lived where courts did.</li>
+<li><b>Bernstein v. United States</b> &mdash; Dan Bernstein asks permission to publish an academic paper and is told his math is a weapon. Judge Patel: source code is speech; the export rules are prior restraint. The Ninth Circuit, 1999: crypto protects "the constitutional rights of each of us as potential recipients of encryption's bounty." <em>A cypherpunk in robes.</em></li>
+<li><b>The NRC report</b> &mdash; the panel takes the clearances, hears the secrets, and rules them <em>irrelevant</em>: "Those classified details... are not particularly relevant." The "if you only knew" argument, dead by its own subpoena.</li>
+<li><b>The surrender</b> &mdash; Sept 1999: Gore announces export liberalization in any key length. Congressman Weldon, who carried the administration's water: "How can you be implementing this policy? For years you've been telling us it will empower criminals!" Baker: <b>"It's over."</b></li>
+</ul>
+
+<p><b>RSA 2000</b> &mdash; Bidzos hands the Justice/NSA panelists a bottle of champagne. Zimmermann, whose indictment was dropped in 1996 ("Phil Got Off the Hook" party), publicly clicks a mouse to export commercial PGP abroad as a celebration. Skipjack is published. The AES bakeoff runs in total openness, half the contenders foreign. Windows 2000 ships 128-bit crypto with clearance. Clinton signs the digital signature bill <em>electronically</em>. Bidzos, in a choir robe, with the diagnosis of the whole 20-year war: <span style="color:var(--amber)">"Public key cryptography was born too soon. It was a solution whose problem hadn't fully materialized... We've found the problem to the solution, and it's e-commerce!"</span></p>
+</div></section>
+
+<section id="secret"><div class="wrap">
+<span class="tag">CHAPTER 10 &mdash; EPILOGUE</span>
+<h2>THE OPEN SECRET: GCHQ knew first</h2>
+<div class="meta">cheltenham, 1969-1997 // the closed world had the idea, and could do nothing with it</div>
+
+<p>While Diffie wandered America's campuses and Merkle fought his professors, an Australian-born orphan named <b>James Ellis</b> &mdash; "classic English eccentric," pre-mixed instant coffee with sugar, the worst technical speaker his colleagues had ever seen, "half of them ridiculous, half could be brilliant" &mdash; worked blue-sky research at GCHQ. Given the key-distribution problem, he did his signature move: <em>challenge the basic assumptions.</em> Everyone knew secure communication without a pre-shared key was impossible. "It was obvious to everyone, including me."</p>
+
+<p>Then a buried WWII memo surfaced: Bell's <b>Project C43</b> &mdash; the recipient adds known noise; only he can subtract it. The principle: <b>the recipient can participate in the encryption.</b> One night in bed, minutes after posing the question, Ellis had the answer. He called it <b>Non-Secret Encryption.</b> The GCHQ chief mathematician's Christmas 1969 verdict: <span style="color:var(--amber)">"Unfortunately, I can't see anything wrong with this."</span> Unfortunately. But it was an existence proof, not a machine.</p>
+
+<div class="timeline">
+<div class="tl"><span class="yr">NOV 1973</span> <span class="what">Clifford Cocks, 22, solves it in one evening</span><p>Teatime puzzle from his mentor; walks home to his rented room (legally forbidden to write anything down at home &mdash; "not even notes on wastepaper"); thinks; "happily, the first idea seemed to work just fine." Multiply two large primes. The formula: virtually identical to RSA &mdash; which took the MIT trio four months three years later. His mentor sprinted down the corridor shouting: "This is the most important cryptographic discovery of the century!" A minority opinion. "People said, 'Ha, ha, now here's a method.'"</p></div>
+<div class="tl"><span class="yr">1974</span> <span class="what">Malcolm Williamson tries to break Cocks's scheme &mdash; and invents Diffie-Hellman instead</span><p>Eight to twelve hours, late at night, unwritable (it became a state secret the instant it left his head). "When you've got a concept that is right, you can't forget it." He judged the whole theory too risky: "I feel that there should be a flaw in the security of the method. But I cannot find anything wrong with it and would be grateful if anyone else can."</p></div>
+<div class="tl"><span class="yr">1976-77</span> <span class="what">Diffie-Hellman publishes. Then RSA.</span><p>Ellis reads "New Directions": <em>"They're where I was in 1969."</em> Cocks recognizes his own discovery in Gardner's column: "I was surprised." Williamson urges GCHQ to block the American patents. The advice from upstairs: <b>"Don't bother."</b></p></div>
+<div class="tl"><span class="yr">SEPT 1982</span> <span class="what">The pub scene</span><p>Diffie drives to Cheltenham, to a house called Dilkusha ("little delight"), where Ellis keeps bees. Getting in the car: "Tell me how you invented non-secret encryption." Ellis: <b>"Who says I did?"</b> Hard cider. Everything but the one subject. And then, the acknowledgment that says everything about the closed world vs. the open one: <span style="color:var(--amber)">"You did more with it than we did."</span> And thereafter kept his secret.</p></div>
+<div class="tl"><span class="yr">DEC 23, 1997</span> <span class="what">GCHQ declassifies the papers</span><p>Ellis's 1985 history of the invention had stayed classified for twelve years &mdash; held, per Williamson, "until a certain person retired." James Ellis died a month before the release. Never saw his own history declassified. "Internal recognition is all you get."</p></div>
+</div>
+
+<p>Why did the closed world sit on the century's biggest idea? Elegance was a bug ("there absolutely may be a magic screw &mdash; some graduate student mathematician could really cause a disaster" &mdash; Williamson). It was impractical (minutes per key). It was, above all, the civil service: <em>"Let's ignore it. Let's sweep it under the carpet."</em> The cost of that caution: no digital signatures, no hybrid systems, none of the open-world flowering &mdash; and, bitterly, the agencies were gutted in the early 80s by key-material traitors (Prime, Walker, Boyce/Lee): the exact vulnerability public key would have eliminated. <b>The problem Ellis set out to solve stayed unsolved because they had already solved it.</b></p>
+
+<div class="quote">The closed world had the idea first and could do nothing with it. The open world reinvented it and changed everything. Secrecy didn't just delay the credit &mdash; it killed the innovation itself. Openness wasn't the delivery mechanism. It was the point.
+<span class="who">&mdash; the lesson of the epilogue</span></div>
+</div></section>
+
+<section id="play"><div class="wrap">
+<span class="tag">DRAMATIS PERSONAE</span>
+<h2>THE PLAYERS</h2>
+<div class="meta">cast of the twenty-year war, as encountered in the text</div>
+<div class="person"><span class="handle">Whit Diffie</span><span class="desc">The loner. Didn't read until ten (policy, not disability). Ten-year quest; split the key in McCarthy's living room. Buffalo Bill beard, bespoke suits, once whacked a colleague's croissant in half with a large knife. <b>"You did more with it than we did"</b> &mdash; his compliment, received at a pub.</span></div>
+<div class="person"><span class="handle">Marty Hellman</span><span class="desc">Diffie's partner; found the discrete-log implementation; DES's most virulent critic. Refused RSA stock ("not a stock guy") &mdash; cost him $1M+. Defended his students' right to speak: <b>"I have tenure."</b></span></div>
+<div class="person"><span class="handle">Ralph Merkle</span><span class="desc">Invented public key as a grad student whose professor rejected the idea. Knapsack broken; prepublication review broken (his paper, Gilmore, sci.crypt). Left crypto for nanotechnology. The man history credited last and least.</span></div>
+<div class="person"><span class="handle">Ron Rivest</span><span class="desc">The R. Couch eureka, April 3 1977. Wrote the RSA paper overnight. Wrote RC-4. His chip simulator outvalued the chip.</span></div>
+<div class="person"><span class="handle">Adi Shamir</span><span class="desc">The S. Learned all of algorithms in two weeks; broke the knapsack; invented secret sharing, threshold schemes, zero-knowledge. Gagged by the US Army once, for two days.</span></div>
+<div class="person"><span class="handle">Len Adleman</span><span class="desc">The A. Pure-theory purist. Broke 31 schemes, then signed the paper he wanted his name off &mdash; "the least important paper my name would ever appear on." Asked for an autograph in a Berkeley bookstore. <em>Even Fermat hadn't gotten that kind of treatment.</em></span></div>
+<div class="person"><span class="handle">Jim Bidzos</span><span class="desc">Crypto's supersalesman. Village of 70 people, no roads. Ex-Marine, backgammon, motorcycles. Saved RSA Inc., licensed the world, fought the NSA to a standstill, took $40M and founded VeriSign. "Salesmanship, Bob. I'm a great salesman."</span></div>
+<div class="person"><span class="handle">Phil Zimmermann</span><span class="desc">The Packager. PGP, three years of grand jury, "Phil Got Off the Hook" party. Political energy from Ellsberg, arrests beside Sagan. Taught the movement its form: <b>distribute the math faster than they can legislate it.</b></span></div>
+<div class="person"><span class="handle">Tim May</span><span class="desc">Ex-Intel physicist, outback hat, Ayn Rand convert. The Crypto Anarchist Manifesto. BlackNet. "Crypto anarchy, digital money, anonymous networks, black markets, and collapse of governments."</span></div>
+<div class="person"><span class="handle">Eric Hughes</span><span class="desc">The Stetson. "Cryptography is the mathematical consequence of paranoid assumptions." Wrote the Cypherpunk Manifesto: cypherpunks write code.</span></div>
+<div class="person"><span class="handle">John Gilmore</span><span class="desc">Sun #5, EFF co-founder. Beat the Espionage Act over library books; leaked Merkle's paper to sci.crypt; funded the Bernstein case and the DES Cracker. "We're asking to discard a Cold War bureaucratic idea of national security which is obsolete."</span></div>
+<div class="person"><span class="handle">David Chaum</span><span class="desc">The Houdini. Blind signatures, e-cash, the Dining Cryptographers. Organized the conferences, attended none of the movement, patented everything, shipped nothing. Digicash: bankrupt, 1998.</span></div>
+<div class="person"><span class="handle">Ray Ozzie</span><span class="desc">Notes; first mass-market public key; the 32-bit capitulation; the NSAF gambit; a SECRECY ORDER for six million users. Later wrote the memo that became Microsoft's cloud pitch.</span></div>
+<div class="person"><span class="handle">Matt Blaze</span><span class="desc">Ex-paramedic, 42 minutes, the LEAF-blower. The man who made the Clipper Chip look stupid, politely, with the NSA's grammar corrections.</span></div>
+<div class="person"><span class="handle">Dorothy Denning</span><span class="desc">"Clipper Chick." The credible academic defender of escrow. Read her locker rescue by maintenance men as a sign. The establishment's one messenger the community couldn't ignore.</span></div>
+<div class="person"><span class="handle">Clint Brooks</span><span class="desc">The Equities man. Invented key escrow, wanted honest national debate, got the rush job instead. Opened Baker's tenure with a bottle of Advil. "Nirvana was lost."</span></div>
+<div class="person"><span class="handle">James Ellis / Clifford Cocks / Malcolm Williamson</span><span class="desc">GCHQ. Invented non-secret encryption (1969), RSA-equivalent (1973), Diffie-Hellman-equivalent (1974). Sat on all of it. "Internal recognition is all you get." Ellis died a month before declassification.</span></div>
+</div></section>
+
+<section id="code"><div class="wrap">
+<span class="tag">CONCEPTS &amp; LEXICON</span>
+<h2>WHAT CAME OF IT</h2>
+<div class="meta">the ideas, inventions, and vocabulary the war produced</div>
+
+<h3 style="color:var(--fg)">## the inventions</h3>
+<div class="grid">
+<div class="card"><span class="yr">1976</span><h3>Public key cryptography</h3><p>Split the key. Publish the lock. Diffie-Hellman-Merkle, independent of Cocks-Williamson-Ellis by two decades.</p></div>
+<div class="card"><span class="yr">1977</span><h3>RSA</h3><p>Factoring as the one-way function. Signatures + privacy in one primitive. Now in every handshake on earth.</p></div>
+<div class="card"><span class="yr">1979</span><h3>Secret sharing</h3><p>Split a key into shadows; any k-of-n reconstruct. Missile silos, custodial keys, backups.</p></div>
+<div class="card"><span class="yr">1985</span><h3>Zero-knowledge proofs</h3><p>Prove you know the secret without revealing it. "A million trips to the Mafia-owned store." The basis of modern authentication research.</p></div>
+<div class="card"><span class="yr">1982-90</span><h3>Blind signatures &amp; e-cash</h3><p>Chaum: a bank certifies money without learning who holds it. The Dining Cryptographers: provable untraceability. Bitcoin's direct ancestor.</p></div>
+<div class="card"><span class="yr">1991</span><h3>PGP + web of trust</h3><p>Peer-to-peer trust, no CA. Email encryption for the people. Still the reference design for decentralized trust.</p></div>
+<div class="card"><span class="yr">1992</span><h3>The cypherpunk mailing list</h3><p>toad.com. Where the future was argued into existence: remailers, digital cash, onion routing, and eventually a little thing called Bitcoin.</p></div>
+<div class="card"><span class="yr">1995-98</span><h3>SSL / TLS</h3><p>Netscape + RSA license = the commercial web. Cracked twice (40-bit keyspace; RNG seeded from time+PIDs) before it was trusted. Now: every padlock icon.</p></div>
+</div>
+
+<h3 style="color:var(--fg);margin-top:26px">## the lexicon</h3>
+<table>
+<tr><th>TERM</th><th>ORIGIN</th><th>MEANING</th></tr>
+<tr><td><b>hack</b></td><td>TMRC, 1958</td><td>A build done for the joy of involvement &mdash; innovation, style, technical virtuosity. The maker of it: a hacker.</td></tr>
+<tr><td><b>cruft / munged</b></td><td>TMRC jargon</td><td>Garbage / Mash Until No Good. Still in every codebase.</td></tr>
+<tr><td><b>Alice, Bob, Eve</b></td><td>RSA paper, 1977</td><td>Rivest's casting. Later joined by Carol, Trent, Dave. Every crypto paper since.</td></tr>
+<tr><td><b>one-way function</b></td><td>Diffie's quest</td><td>Easy forward, impossible reverse. "Like putting together a pulverized dinner plate."</td></tr>
+<tr><td><b>key escrow</b></td><td>Brooks, 1989</td><td>Duplicate keys held in trust for the state. The idea that would not die &mdash; see "lawful access," "client-side scanning."</td></tr>
+<tr><td><b>LEAF</b></td><td>Clipper, 1993</td><td>Law Enforcement Access Field. Originally "Exploitation." Killed by a 16-bit checksum in 42 minutes.</td></tr>
+<tr><td><b>export-grade crypto</b></td><td>Lotus deal, 1989</td><td>Deliberately weak crypto for foreigners. Its 512-bit ghosts (Logjam, FREAK) haunted the web for 25 years.</td></tr>
+<tr><td><b>web of trust</b></td><td>PGP 2.0, 1992</td><td>Trust as a peer-to-peer graph. "Paranoia levels" &mdash; Schneier.</td></tr>
+<tr><td><b>cypherpunk</b></td><td>St. Jude, Sept 1992</td><td>Punk + crypto. "Cypherpunks write code."</td></tr>
+<tr><td><b>remailer / nym</b></td><td>Hughes, 1992-93</td><td>Anonymous chains; persistent pseudonyms. Penet, mixmasters, Tor's grandparents.</td></tr>
+<tr><td><b>look for plaintext</b></td><td>Morris's koan #2</td><td>Before breaking the cipher, check if the message is already readable. Still the most durable sentence in security.</td></tr>
+<tr><td><b>SQUEAMISH OSSIFRAGE</b></td><td>RSA-129, 1977/1994</td><td>The magic words inside the "unbreakable" challenge. Proof that quadrillion-year estimates are opinions.</td></tr>
+</table>
+
+<h3 style="color:var(--fg);margin-top:26px">## the debates that never died</h3>
+<div class="grid">
+<div class="card"><h3>Backdoors, 1991 &harr; now</h3><p>Biden's S.266 clause ("providers shall ensure the government can obtain plaintext") is verbatim today's "lawful access" hearing. The answer is still the same: distribute the math faster than they can legislate it.</p></div>
+<div class="card"><h3>Key length, 1975 &harr; now</h3><p>"A small key is a guarantee of insecurity" &mdash; Hellman. Every "just 40 bits for export" becomes someone's Logjam a generation later.</p></div>
+<div class="card"><h3>Trust the math or the men?</h3><p>Kerckhoffs, 1881 &rarr; Diffie's open cipher &rarr; "nothing up our sleeve." Myhrvold's rule: why would the NSA fight it so hard unless it was actually strong?</p></div>
+<div class="card"><h3>Secrecy vs. openness</h3><p>GCHQ had public key for 20 years and produced nothing. The open world reinvented it and changed everything. Openness wasn't the delivery mechanism. It was the point.</p></div>
+</div>
+
+<h3 style="color:var(--fg);margin-top:26px">## the koans (morris, crypto '95)</h3>
+<div class="koan"><div class="num">壹</div><div class="body"><b>For codemakers:</b> never underestimate the time and expense your opponent will take to break your code. They are rich, clever, dedicated, and they often win.</div></div>
+<div class="koan"><div class="num">貳</div><div class="body"><b>For codebreakers:</b> look for plaintext. Very fallible humans run the systems. Sometimes the impenetrable jumble has a passage &mdash; or a whole message &mdash; sitting unencoded. Read it like a fortune cookie.</div></div>
+
+<div class="quote" style="margin-top:30px">On the Information Highway, borders are just speed bumps.
+<span class="who">&mdash; net proverb, 1991, born the day PGP crossed the ocean</span></div>
+</div></section>
+
+<footer><div class="wrap">
+<div class="ascii" style="color:var(--dim);font-size:10px;white-space:pre;display:inline-block;text-align:left;text-shadow:none">  ____ _  _   _   _  _____ ___ ___    ___
+ / __| || | /_\ | |/ / __| _ \ _ \  / _|
+| (__| __ |/ _ \| ' <| _||   /   / |  _|
+ \___|_||_/_/ \_\_|\_\___|_|_\_|_\ |_|</div>
+<p style="margin-top:14px">compiled from steven levy, <b>crypto: how the code rebels beat the government &mdash; saving privacy in the digital age</b> (penguin, 2001)<br>
+all ten chapters + epilogue digested &middot; jan 2026 &middot; the 370</p>
+<p>"Cypherpunks write code. Cypherpunks will make the networks safe for privacy."</p>
+<div class="fin">// EOF <span class="blink">_</span></div>
+</div></footer>
+
+<script>
+// boot log
+const boot = [
+  "mounting /dev/crypto ... ok",
+  "loading keyring ... 2048 keys found",
+  "checking LEAF checksum ... 16 bits ... vulnerable (blaze, 1994)",
+  "dike status ... BROKEN (1999)",
+  "welcome, citizen."
+];
+const el = document.createElement("div");
+el.style.cssText = "position:fixed;bottom:10px;left:10px;font-size:11px;color:#1a8f3c;z-index:9997;pointer-events:none";
+document.body.appendChild(el);
+let i = 0;
+function tick(){
+  if(i < boot.length){
+    el.textContent = "> " + boot.slice(0, ++i).join("\n> ");
+    setTimeout(tick, 900);
+  } else {
+    setTimeout(()=>{ el.style.transition = "opacity 2s"; el.style.opacity = "0"; }, 4000);
+  }
+}
+setTimeout(tick, 800);
+
+// console easter egg
+console.log("%cTHE MAGIC WORDS ARE SQUEAMISH OSSIFRAGE", "color:#33ff66;font-family:monospace;font-size:14px;text-shadow:0 0 4px #33ff66");
+console.log("%c> you found plaintext. koan two honoured.", "color:#ffb000;font-family:monospace");
+</script>
+</body>
+</html>
